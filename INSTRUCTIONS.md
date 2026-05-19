@@ -19,44 +19,47 @@ The dataset folder structure should be as follows:
 --brats_men #Meningioma Segmentation
 ```
 
-You can download as much BraTS datasets as you want to use, but all of them should be placed inside the `data` folder following the above specified naming instructions.
+You can download as much BraTS datasets as you want to use, but all of them should be placed inside the `data` folder, that should be placed at the same level as the folder of this repo, following the above specified naming instructions.
 
 ### *Download code & Set the environment*
 Open a terminal and execute the following commands:
 
 
 ```
-git clone https://github.com/vpulab/med-sam-brain/;
-cd med-sam-brain;
+git clone https://github.com/vpulab/gbt-sam/;
+cd gbt-sam;
 conda env create -f environment.yml;
-conda activate sam_adapt_brain;
+conda activate gbt_sam_env;
 ```
 
 ### *Training & Testing*
 
 **Training**
 
+The weights of our final model can be downloaded through [this link](https://drive.google.com/file/d/1ZDmPF8NHaUgZ--xe1a8gYKXc9vEgKRnW/view?usp=sharing).
+
+*** Step 1: Just Patch Embedding
+
 ```
-python train.py -net sam -mod sam_lora -exp_name ... ./checkpoint/sam/sam_vit_b_01ec64.pth -b 1 -dataset brats -thd True  -data_path ../data -w 8 -four_chan True 
+python train.py -net sam -mod sam_patch -exp_name gbt-sam_patch-embed -sam_ckpt ./checkpoint/sam/sam_vit_b_01ec64.pth -b 1 -dataset brats -thd True -num_sample 1 -w 8
 ```
 
-Parameter `mod` can be defined as: `sam_lora` to train LoRA blocks making SAM adapt to the medical domain; or `sam` in case you want to maintain the original SAM architecture. Parameter `four_chan` should be defined as `True` if you want to use all 4 MRI modalities; or `False` if just taking e of them to not train the Patch Embedding Layer. Parameter `dataset` must be defined as any of the names indicated in the 'Data acquisition' section.
+*** Step 2: Patch Embedding + LoRA + Depth Condition block
+
+```
+python train.py -net sam -mod sam_lora_depth -thd True -exp_name  gbt-sam-2step-training -sam_ckpt logs/model_id/Model/best_dice -dataset brats -mid_dim 12 -slice_distance 1 -four_chan True -box True -overlap 75;
+```
+
+Parameter `model_id` should be replaced by the saved the model whose weights (from step 1) you want to use. Parameter `mod` can also be defined as: `sam_lora` to train just LoRA blocks and Patch Embedding (no Depth Condition block); or `sam` in case you want to maintain the original SAM architecture. Parameter `four_chan` should be defined as `True` if you want to use all 4 MRI modalities; or `False` if just taking e of them to not train the Patch Embedding Layer. Parameter `dataset` must be defined as any of the names indicated in the 'Data acquisition' section. Parameter `mid_dim` defines the rank of LoRA blocks. 
 
 After running the training command, 'sam_vit_b_01ec64.pth' will be downloaded and stored in 'checkpoint/sam/'. The saved model parameters will be placed in the 'logs/' directory.
 
 **Validation**
 
 ```
-python valid.py -net sam -mod sam_lora -thd True  -dataset brats -weights logs/.../Model/best_dice -sam_ckpt logs/.../Model/best_dice -mode Validation -four_chan True 
-```
-
-Parameters `weights` and `sam_ckpt` should be replaced by the directory of the saved model file in 'logs/'.
-
-**NOTE:** In case you don't have enough GPU to execute the training process, you can uncomment the following code lines on `function.py`, which reduces computational cost by taking 4 random slices per volume (the selected slices change each iteration).
+python val.py -net sam -mod sam_lora_depth -sam_ckpt logs/model_id/Model/best_dice  -weights logs/model_id/Model/best_dice -dataset brats -w 0 -save_individual_global_results experiment_id  -thd True  -mode Validation -mid_dim 12 -slice_distance 1 -four_chan True -box True -overlap 75;
 
 ```
-# If not enough GPU, uncomment the following 3 lines (lines 73-76 and 226-230)
-# i_slices = SelectEquiSlices(4, masks)
-# imgs = imgs[:,:,:,:,i_slices] 
-# masks = masks[:,:,:,:,i_slices]
-```
+
+Parameter `model_id` should be replaced by the saved model whose weights you want to use. Parameter `save_individual_global_results` is used to create en experiment_id.xlsx containg the results of both per-patient predictions and the mean of the whole dataset. This results will be saved in the 'results_excel/' directory.
+
