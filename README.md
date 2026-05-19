@@ -2,6 +2,8 @@
 
 This repository contains the official implementation of our paper: [GBT-SAM: A Parameter-Efficient Depth-Aware Model for Generalizable Brain Tumor Segmentation on mp-MRI](https://arxiv.org/abs/2503.04325).
 
+If you would like to use our model for training or inference, follow the instructions detailed in: [INSTRUCTIONS.md](https://github.com/vpulab/gbt-sam/blob/main/INSTRUCTIONS.md)
+
 ## Abstract
 GBT-SAM is a parameter-efficient framework that adapts the large-scale Segment Anything Model (SAM) to volumetric mp-MRI data. We address the limitations of standard models in utilizing multi-parametric MRI (mp-MRI) information and inter-slice contextual data. Our approach integrates all four MRI modalities (T1, T2, T1c, and T2-FLAIR) and introduces a depth-aware module to capture inter-slice correlations, all while maintaining high parameter efficiency.
 
