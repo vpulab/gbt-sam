@@ -1,27 +1,28 @@
-# SAM Adaptation for mp-MRI Brain Tumor Segmentation
-
-This is the repository of our accepted CVPR-2024 paper for [DEF-AI-MIA Workshop](https://ai-medical-image-analysis.github.io/4th/). 
-
-We address in our study the primary challenge of adapting SAM for mp-MRI brain scans, which typically encompass multiple MRI modalities not fully utilized by standard three-channel vision models. We demonstrate that leveraging all available MRI modalities achieves superior performance compared to the standard mechanism of repeating a MRI scan to fit the input embedding. Furthermore, we incorporate Parameter Efficient Fine-Tuning (PEFT) through LoRA blocks to solve the lack of SAM's medical specific knowledge.
-
-### *Pipeline Overview*
-
-![Captura de pantalla 2024-04-11 a las 18 23 38](https://github.com/vpulab/med-sam-brain/assets/96308828/4b82d250-e471-4052-89e4-e428e2b49048)
-
-We propose to adapt the encoder by: 1) accounting for all the mp-MRI volumetric image modalities; and 2) specifically tuning of the encoder to retain the open-world segmentation capabilities of SAM.
+# GBT-SAM: A Parameter-Efficient Depth-Aware Model for Generalizable Brain Tumor Segmentation on mp-MRI
 
 
-### *Proposed Encoder*
+## Abstract
+[cite_start]GBT-SAM is a parameter-efficient deep learning framework that adapts the large-scale Segment Anything Model (SAM) to volumetric mp-MRI data[cite: 17]. [cite_start]Standard models often fail to fully exploit the multi-parametric MRI (mp-MRI) information and inter-slice contextual data[cite: 15]. [cite_start]Our approach addresses these limitations by leveraging all four MRI modalities (T1, T2, T1c, and T2-FLAIR) and introducing a depth-aware module to capture inter-slice correlations, all while maintaining high parameter efficiency[cite: 18, 19, 72].
 
-![Captura de pantalla 2024-04-11 a las 18 25 17](https://github.com/vpulab/med-sam-brain/assets/96308828/13217e7d-71ad-4398-8ff8-218aece39365)
+## Key Contributions
 
-We propose to modify the patch embedding layer, so that it accounts for the all the MRI modalities, allowing for a seamless integration of the information. Then, we employ LoRAs to tune Multi Layer Perceptron blocks (MLP) and Attention (Q,K,V embedding) layers of the 
-transformer blocks.
+* [cite_start]**Multi-modal Adaptation for mp-MRI:** We modify the foundational SAM patch embedding layer to accommodate a genuine 4-channel input, enabling the joint processing of all standard mp-MRI sequences without information loss[cite: 72].
+* [cite_start]**Depth-Conditioned Correlation Modelling:** We introduce a lightweight Depth-Condition block integrated at multiple architectural stages to efficiently capture inter-slice volumetric dependencies across adjacent slices[cite: 73, 74].
+* [cite_start]**Parameter-Efficient Domain Adaptation:** Using Low-Rank Adaptation (LoRA), our model achieves competitive segmentation accuracy with only 9.97M trainable parameters, the lowest among existing SAM-based approaches[cite: 19, 76].
+* [cite_start]**Robust Domain Generalization:** Our framework is validated across four distinct clinical domains (Adult Glioma, Meningioma, Pediatric Glioma, and Sub-Saharan Glioma), demonstrating superior domain robustness and zero-shot transfer capabilities[cite: 21, 77].
 
+## Architecture Overview
+[cite_start]GBT-SAM employs a two-step fine-tuning strategy[cite: 19]. [cite_start]In the first step, the architecture is frozen except for the modified patch embedding layer, which is optimized to process the full mp-MRI input[cite: 262]. [cite_start]In the second step, we integrate LoRA blocks within the encoder layers and fine-tune the patch embedding alongside these lightweight adapters and the Depth-Condition module[cite: 264]. 
 
-### *Cite:*
+[cite_start]During training, we utilize a slice selection strategy that processes only 4 slices per scan to reduce computational complexity while retaining essential tumor-related information[cite: 18]. [cite_start]At inference, the model utilizes the full volume via a sliding window approach to ensure clinically robust 3D segmentation[cite: 181, 277].
 
-```
+## Performance
+[cite_start]GBT-SAM trained exclusively on the BraTS Adult Glioma dataset achieves a Dice score of 92.66[cite: 20]. [cite_start]It demonstrates exceptional efficiency, requiring significantly fewer trainable parameters than top-performing alternatives while maintaining state-of-the-art segmentation accuracy[cite: 76].
+
+## Cite
+If you use this code or our approach in your research, please cite our paper:
+
+```bibtex
 @inproceedings{cdiana2024med-sam-brain,
   title={How SAM Perceives Different mp-MRI Brain Tumor Domains?},
   author={Diana-Albelda, Cecilia and Alcover-Couso, Roberto and García-Martín, Álvaro and Bescos, Jesus},
@@ -29,4 +30,3 @@ transformer blocks.
   pages={4959--4970},
   year={2024}
 }
-```
