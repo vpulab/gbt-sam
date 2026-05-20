@@ -45,6 +45,8 @@ conda activate gbt_sam_env
 For direct inference or to bypass the training phases, the final pre-trained model weights are available for download:
 **[Download GBT-SAM Pre-trained Weights](https://drive.google.com/file/d/1ZDmPF8NHaUgZ--xe1a8gYKXc9vEgKRnW/view?usp=sharing)**
 
+Once downloaded, place the extracted weights folder (`gbt-sam_weights`) directly into the `logs/` directory within your cloned repository (`gbt-sam/logs/`).
+
 ## 5. Training Pipeline
 
 GBT-SAM implements a two-step fine-tuning protocol to adapt the baseline SAM architecture to the 4-channel medical domain. 
@@ -81,11 +83,25 @@ python train.py -net sam -mod sam_lora_depth -thd True -exp_name gbt-sam-2step-t
 
 The inference pipeline processes the complete MRI volumes systematically utilizing a sliding window approach. 
 
-Execute the following command for validation. Ensure `model_id` is replaced with the directory containing the fully trained model from Step 2, and `experiment_id` is defined to identify the output records:
+### General Validation Command
+Execute the following command for validation. Ensure `model_id` is replaced with the directory containing your fully trained model from Step 2, and `experiment_id` is defined to identify the output records:
 
 ```bash
 python val.py -net sam -mod sam_lora_depth -sam_ckpt logs/model_id/Model/best_dice -weights logs/model_id/Model/best_dice -dataset brats -w 0 -save_individual_global_results experiment_id -thd True -mode Validation -mid_dim 12 -slice_distance 1 -four_chan True -box True -overlap 75;
 ```
+
+### Direct Inference with Pre-trained Weights
+If you downloaded the pre-trained weights from Section 4 and placed them in the `logs/` folder, run the following command to test the model directly:
+
+```bash
+python val.py -net sam -mod sam_lora_depth -sam_ckpt logs/gbt-sam_weights -weights logs/gbt-sam_weights -dataset brats -w 0 -save_individual_global_results experiment_id -thd True -mode Validation -mid_dim 12 -slice_distance 1 -four_chan True -box True -overlap 75;
+```
+
+### A Note on Validation Data and Splits
+When executing the validation script on the Adult Glioma domain (`-dataset brats`), the code dynamically reserves a 20% holdout split using a fixed random seed. This mechanism is intentionally left in place to allow users to perfectly reproduce the exact test split evaluated in our paper if the complete BraTS 2023 Adult Glioma dataset is used.
+
+* **Small Datasets:** If evaluating a small test subset (e.g., fewer than 5 patients), the script automatically bypasses this split and evaluates 100% of the provided samples to prevent execution errors.
+* **Avoiding Data Leakage:** If you intend to fine-tune the model on your own data combinations, be aware of this dynamic split. To avoid data leakage, ensure you properly manage your evaluation indices or point the inference script strictly to designated holdout directories.
 
 ### Validation Parameters Guide:
 * `-save_individual_global_results`: Compiles the results into an Excel spreadsheet (`experiment_id.xlsx`). This file contains detailed per-patient prediction scores and the aggregated dataset mean. Output files are stored in the `results_excel/` directory.
