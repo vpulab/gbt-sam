@@ -2,9 +2,10 @@
 
 This document provides the standard operating procedures to configure the environment, acquire the required datasets, and execute the training and validation pipelines for the GBT-SAM framework.
 
-## 1. Requirements
+## 1. Tested Environment
 
-The system must meet the following hardware and software specifications:
+This framework was developed and evaluated using the specific hardware and software environment listed below. While the code may be compatible with newer or older versions of these libraries, out-of-the-box functionality without further adaptation is only guaranteed for this configuration:
+
 * **CUDA Version:** 11.8
 * **PyTorch Ecosystem:**
   * `torch == 1.13.0`
