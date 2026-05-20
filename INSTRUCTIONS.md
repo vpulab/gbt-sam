@@ -90,7 +90,7 @@ Execute the following command for validation. Ensure `model_id` is replaced with
 python val.py -net sam -mod sam_lora_depth -sam_ckpt logs/model_id/Model/best_dice -weights logs/model_id/Model/best_dice -dataset brats -w 0 -save_individual_global_results experiment_id -thd True -mode Validation -mid_dim 12 -slice_distance 1 -four_chan True -box True -overlap 75;
 ```
 
-### Direct Inference with Pre-trained Weights
+### Direct Inference with our Provided Pre-trained Weights
 If you downloaded the pre-trained weights from Section 4 and placed them in the `logs/` folder, run the following command to test the model directly:
 
 ```bash
