@@ -34,7 +34,7 @@ data/
 Execute the following commands in the terminal to clone the repository, generate the Conda environment, and activate it:
 
 ```bash
-git clone [https://github.com/vpulab/gbt-sam/](https://github.com/vpulab/gbt-sam/)
+git clone https://github.com/vpulab/gbt-sam/
 cd gbt-sam
 conda env create -f environment.yml
 conda activate gbt_sam_env
