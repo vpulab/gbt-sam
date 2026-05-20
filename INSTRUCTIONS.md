@@ -95,7 +95,7 @@ python val.py -net sam -mod sam_lora_depth -sam_ckpt logs/model_id/Model/best_di
 If you downloaded the pre-trained weights from Section 4 and placed them in the `logs/` folder, run the following command to test the model directly:
 
 ```bash
-python val.py -net sam -mod sam_lora_depth -sam_ckpt logs/gbt-sam_weights -weights logs/gbt-sam_weights -dataset brats -w 0 -save_individual_global_results experiment_id -thd True -mode Validation -mid_dim 12 -slice_distance 1 -four_chan True -box True -overlap 75;
+python val.py -net sam -mod sam_lora_depth -sam_ckpt logs/gbt-sam_weights -weights logs/gbt-sam_weights -dataset brats -w 0 -save_individual_global_results experiment_id -exp_name gbt_sam_validation -thd True -mode Validation -mid_dim 12 -slice_distance 1 -four_chan True -box True -overlap 75;
 ```
 
 ### A Note on Validation Data and Splits
