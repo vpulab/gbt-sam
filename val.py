@@ -94,7 +94,11 @@ if 'brats' in args.dataset: # BraTS dataset
     # For the domain seen during training (Adult Glioma):
     if args.dataset == 'brats':
         np.random.seed(666)
-        split = int(np.floor(0.2 * dataset_size))
+        calculated_split = int(np.floor(0.2 * dataset_size))
+        
+        # Fallback to prevent Length: 0 crashes on small toy datasets
+        split = calculated_split if calculated_split > 0 else dataset_size
+        
         np.random.shuffle(indices)
         test_sampler = SubsetRandomSampler(indices[:split])
     else:
