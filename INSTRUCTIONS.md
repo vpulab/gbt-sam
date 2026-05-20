@@ -2,7 +2,7 @@
 
 This document provides the standard operating procedures to configure the environment, acquire the required datasets, and execute the training and validation pipelines for the GBT-SAM framework.
 
-## 1. Tested Environment
+## 1. Environment Setup
 
 This framework was developed and evaluated using the specific hardware and software environment listed below. While the code may be compatible with newer or older versions of these libraries, out-of-the-box functionality without further adaptation is only guaranteed for this configuration:
 
@@ -30,7 +30,7 @@ data/
 
 *Note: Ensure the directory names match the expected structure strictly to prevent path resolution errors during execution.*
 
-## 3. Environment Configuration
+## 3. Repository Cloning and Installation
 
 Execute the following commands in the terminal to clone the repository, generate the Conda environment, and activate it:
 
